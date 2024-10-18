@@ -50,17 +50,17 @@
 
             public:
                 void printTable() {
-    bool first = true; // Flag to handle the first element without preceding separator
+    bool first = true; 
     for (int i = 0; i < size; i++) {
         if (!first) {
-            std::cout << " - "; // Add separator between elements
+            std::cout << " - "; 
         }
         if (occupied[i]) {
             std::cout << table[i];
         } else {
             std::cout << "-";
         }
-        first = false; // After first element, always add separator before next element
+        first = false; 
     }
     std::cout << std::endl;
 }
