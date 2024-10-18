@@ -49,6 +49,19 @@ private:
     }
 
 public:
+    void printTable() {
+        for (int i = 0; i < size; i++) {
+            if (occupied[i]) {
+                std::cout << table[i];
+            } else {
+                std::cout << "-";
+            }
+            if (i < size - 1) {
+                std::cout << " - ";
+            }
+        }
+        std::cout << std::endl;
+    }
     HashTable(int initialSize) {
         size = nextPrime(initialSize);
         table = std::vector<int>(size, -1);
