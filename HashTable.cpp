@@ -1,47 +1,17 @@
-
-
+#include <iostream>
 #include <vector>
 #include <cmath>
-#include <stdexcept>
 
 class HashTable {
 private:
-    struct Entry {
-        int key;
-        int value;
-        bool isActive;
-        Entry(int k, int v) : key(k), value(v), isActive(true) {}
-    };
-
-    std::vector<Entry*> table;
-    int currentSize;
-    int capacity;
+    std::vector<int> table;
+    std::vector<bool> occupied;
+    int size;
+    int count;
     const double loadFactorThreshold = 0.8;
 
-    int hashFunction(int key) const {
-        return key % capacity;
-    }
-
-    void resize() {
-        int oldCapacity = capacity;
-        capacity = nextPrime(2 * capacity);
-        std::vector<Entry*> oldTable = table;
-        table = std::vector<Entry*>(capacity, nullptr);
-        currentSize = 0;
-
-        for (int i = 0; i < oldCapacity; ++i) {
-            if (oldTable[i] != nullptr && oldTable[i]->isActive) {
-                insert(oldTable[i]->key, oldTable[i]->value);
-                delete oldTable[i];
-            }
-        }
-    }
-
-    int nextPrime(int n) {
-        while (!isPrime(n)) {
-            ++n;
-        }
-        return n;
+    int hash(int key) {
+        return key % size;
     }
 
     bool isPrime(int n) {
@@ -54,58 +24,75 @@ private:
         return true;
     }
 
-public:
-    HashTable(int size = 11) : table(size, nullptr), currentSize(0), capacity(size) {}
+    int nextPrime(int n) {
+        while (!isPrime(n)) {
+            n++;
+        }
+        return n;
+    }
 
-    ~HashTable() {
-        for (auto entry : table) {
-            delete entry;
+    void resize() {
+        int oldSize = size;
+        size = nextPrime(size * 2);
+        std::vector<int> oldTable = table;
+        std::vector<bool> oldOccupied = occupied;
+
+        table = std::vector<int>(size, -1);
+        occupied = std::vector<bool>(size, false);
+        count = 0;
+
+        for (int i = 0; i < oldSize; i++) {
+            if (oldOccupied[i]) {
+                insert(oldTable[i]);
+            }
         }
     }
 
-    void insert(int key, int value) {
-        if (currentSize >= capacity * loadFactorThreshold) {
+public:
+    HashTable(int initialSize) {
+        size = nextPrime(initialSize);
+        table = std::vector<int>(size, -1);
+        occupied = std::vector<bool>(size, false);
+        count = 0;
+    }
+
+    void insert(int key) {
+        if ((double)count / size >= loadFactorThreshold) {
             resize();
         }
 
-        int index = hashFunction(key);
+        int index = hash(key);
         int i = 0;
-        while (table[(index + i * i) % capacity] != nullptr && table[(index + i * i) % capacity]->isActive) {
-            if (table[(index + i * i) % capacity]->key == key) {
-                table[(index + i * i) % capacity]->value = value;
-                return;
-            }
-            ++i;
+        while (occupied[(index + i * i) % size]) {
+            i++;
         }
-
-        table[(index + i * i) % capacity] = new Entry(key, value);
-        ++currentSize;
+        table[(index + i * i) % size] = key;
+        occupied[(index + i * i) % size] = true;
+        count++;
     }
 
-    bool search(int key, int &value) const {
-        int index = hashFunction(key);
+    bool search(int key) {
+        int index = hash(key);
         int i = 0;
-        while (table[(index + i * i) % capacity] != nullptr) {
-            if (table[(index + i * i) % capacity]->key == key && table[(index + i * i) % capacity]->isActive) {
-                value = table[(index + i * i) % capacity]->value;
+        while (occupied[(index + i * i) % size]) {
+            if (table[(index + i * i) % size] == key) {
                 return true;
             }
-            ++i;
+            i++;
         }
         return false;
     }
 
     void remove(int key) {
-        int index = hashFunction(key);
+        int index = hash(key);
         int i = 0;
-        while (table[(index + i * i) % capacity] != nullptr) {
-            if (table[(index + i * i) % capacity]->key == key && table[(index + i * i) % capacity]->isActive) {
-                table[(index + i * i) % capacity]->isActive = false;
-                --currentSize;
+        while (occupied[(index + i * i) % size]) {
+            if (table[(index + i * i) % size] == key) {
+                occupied[(index + i * i) % size] = false;
+                count--;
                 return;
             }
-            ++i;
+            i++;
         }
     }
 };
-
