@@ -1,4 +1,4 @@
- #include <iostream>
+#include <iostream>
             #include <vector>
             #include <cmath>
 
@@ -60,8 +60,6 @@
                             std::cout << " - ";
                         }
                     }
-    std::cout << std::endl;
-}
                     std::cout << std::endl;
                 }
 
@@ -72,7 +70,7 @@
                     count = 0;
                 }
 
-                
+                // Move constructor
                 HashTable(HashTable&& other) noexcept
                     : table(std::move(other.table)),
                       occupied(std::move(other.occupied)),
@@ -83,14 +81,14 @@
                     other.count = 0;
                 }
 
-                
+                // Move assignment operator
                 HashTable& operator=(HashTable&& other) noexcept {
                     if (this != &other) {
                         table = std::move(other.table);
                         occupied = std::move(other.occupied);
                         size = other.size;
                         count = other.count;
-                        
+                        // loadFactorThreshold is const, no need to assign
 
                         other.size = 0;
                         other.count = 0;
