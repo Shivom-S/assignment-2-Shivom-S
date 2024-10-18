@@ -50,18 +50,16 @@
 
             public:
                 void printTable() {
-    bool first = true; 
-    for (int i = 0; i < size; i++) {
-        if (!first) {
-            std::cout << " - "; 
-        }
-        if (occupied[i]) {
-            std::cout << table[i];
-        } else {
-            std::cout << "-";
-        }
-        first = false; 
-    }
+                    for (int i = 0; i < size; i++) {
+                        if (occupied[i]) {
+                            std::cout << table[i];
+                        } else {
+                            std::cout << "-";
+                        }
+                        if (i < size - 1) {
+                            std::cout << " - ";
+                        }
+                    }
     std::cout << std::endl;
 }
                     std::cout << std::endl;
@@ -74,7 +72,7 @@
                     count = 0;
                 }
 
-                // Move constructor
+                
                 HashTable(HashTable&& other) noexcept
                     : table(std::move(other.table)),
                       occupied(std::move(other.occupied)),
@@ -85,14 +83,14 @@
                     other.count = 0;
                 }
 
-                // Move assignment operator
+                
                 HashTable& operator=(HashTable&& other) noexcept {
                     if (this != &other) {
                         table = std::move(other.table);
                         occupied = std::move(other.occupied);
                         size = other.size;
                         count = other.count;
-                        // loadFactorThreshold is const, no need to assign
+                        
 
                         other.size = 0;
                         other.count = 0;
